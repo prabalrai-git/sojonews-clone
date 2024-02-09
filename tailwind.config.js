@@ -2,7 +2,23 @@
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        appgreen: "#26B060",
+        applightgreen: "#E2F2E9",
+        appgreenhover: "#1b8247",
+        footergray: "#E6E7E9",
+        appgray: "#E6E7E9",
+        categorygreen: "#BFE9D1",
+        darkModebglight: "#3F424A",
+      },
+      spacing: {
+        commonwidth: "1200px",
+      },
+      screens: {
+        xsm: "10px",
+      },
+    },
   },
   plugins: [],
 };
