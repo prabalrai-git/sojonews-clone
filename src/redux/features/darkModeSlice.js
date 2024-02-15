@@ -1,7 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  value: true,
+  value: localStorage.getItem("darkMode")
+    ? localStorage.getItem("darkMode") === "true"
+    : false,
 };
 
 export const counterSlice = createSlice({
@@ -18,7 +20,7 @@ export const counterSlice = createSlice({
     darkModeOff: (state) => {
       state.value = false;
     },
-    toggleDarkMode: (state, action) => {
+    toggleDarkMode: (state) => {
       state.value = !state.value;
     },
   },

@@ -1,5 +1,13 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Category, Home, Layout, Login, News, NotFound } from "./pages";
+import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
+import {
+  Bookmarks,
+  Category,
+  Home,
+  Layout,
+  Login,
+  News,
+  NotFound,
+} from "./pages";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
 
@@ -19,6 +27,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/news/:id" element={<News />} />
           <Route path="/news/category/:id" element={<Category />} />
+          <Route path="/bookmarks" element={<Bookmarks />} />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>

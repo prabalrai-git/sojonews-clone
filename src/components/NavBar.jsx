@@ -8,6 +8,10 @@ import PrimaryButton from "./PrimaryButton";
 import { RiMenuFoldFill } from "react-icons/ri";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleDarkMode } from "../redux/features/darkModeSlice";
+import useLocalStorageGetItem from "../../hooks/useLocalStorageGetItem";
+import { Dropdown } from "antd";
+import { FaAngleDown } from "react-icons/fa6";
+
 const NavBar = () => {
   const [mobileMenuShow, setMobileMenuShow] = useState(false);
   const navigate = useNavigate();
@@ -18,6 +22,25 @@ const NavBar = () => {
   };
 
   const darkMode = useSelector((state) => state.darkMode.value);
+
+  const user = useLocalStorageGetItem("username");
+
+  const logout = () => {
+    localStorage.clear();
+    navigate("/");
+    window.location.reload();
+  };
+
+  const items = [
+    {
+      key: "1",
+      label: <p onClick={logout}>Logout</p>,
+    },
+    {
+      key: "2",
+      label: <p onClick={() => navigate("/bookmarks")}>Bookmarks</p>,
+    },
+  ];
 
   return (
     <>
@@ -35,10 +58,27 @@ const NavBar = () => {
         </div>
         <div className=" xsm:hidden sm:flex flex flex-row gap-[40px]  items-center">
           <Link className="text-appgreen no-underline ">Contact Us</Link>
-          <PrimaryButton title={"Sign In"} width={"80px"} onClick={onSigin} />
+          {user ? (
+            <Dropdown
+              className="min-w-[200px] "
+              menu={{
+                items,
+              }}
+            >
+              <p className="flex gap-2 items-center justify-center text-appgreen capitalize">
+                <p>{user}</p>
+                <FaAngleDown />
+              </p>
+            </Dropdown>
+          ) : (
+            <PrimaryButton title={"Sign In"} width={"80px"} onClick={onSigin} />
+          )}
           <img
             src={darkMode ? DarkModeWhite : DarkModeBlack}
-            onClick={() => dispatch(toggleDarkMode())}
+            onClick={() => {
+              localStorage.setItem("darkMode", !darkMode);
+              dispatch(toggleDarkMode());
+            }}
             className="w-[30px] h-[30px] cursor-pointer"
             alt=""
           />

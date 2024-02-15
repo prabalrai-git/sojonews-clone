@@ -1,26 +1,36 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import AppleStoreBtn from "../assets/appleBtn1.png";
 import GoogleStoreBtn from "../assets/googleBtn.png";
 import CategorySlider from "../components/CategorySlider";
 import SelectComponent from "../components/SelectComponent";
-import { aNews, categories } from "../../fakedata";
+import { categories } from "../../fakedata";
 import NewsCard from "../components/NewsCard";
 import PrimaryButton from "../components/PrimaryButton";
-import { useSelector } from "react-redux";
+import Axios from "../api/server";
 
 // Filter `option.label` match the user type `input`
 
 function Home() {
-  const data = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+  const [news, setNews] = useState([]);
+  const [page, setPage] = useState(1);
+
   const selectOptionsFiltered = categories.map((item) => {
     return { value: item.name, label: item.name };
   });
 
-  const item = aNews;
+  useEffect(() => {
+    getNews();
+  }, [page]);
 
-  const darkMode = useSelector((state) => state.darkMode.value);
+  const getNews = async () => {
+    const response = await Axios.get(`news?page=${page}&limit=15`);
 
-  console.log(darkMode, "thi is dark mode");
+    if (news?.length > 0) {
+      setNews((prev) => [...prev, ...response.data.data]);
+    } else {
+      setNews(response.data.data);
+    }
+  };
 
   return (
     <>
@@ -58,14 +68,14 @@ function Home() {
       </div>
 
       <div className="grid xsm:grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-[30px] justify-between px-[20px]">
-        {data.map((yo) => {
+        {news?.map((item) => {
           return <NewsCard item={item} />;
         })}
       </div>
       <div className="flex justify-center items-center mt-[50px]">
         <PrimaryButton
           title={"Load More News"}
-          onClick={() => {}}
+          onClick={() => setPage((prev) => prev + 1)}
           width={"250px"}
         />
       </div>

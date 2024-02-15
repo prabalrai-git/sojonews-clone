@@ -4,14 +4,17 @@ import SiginWith from "../components/SiginWith";
 import { signinwith } from "../../fakedata";
 import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
+import Axios from "../api/server";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
   const [token, setToken] = useState();
-  const [profile, setProfile] = useState();
 
   const onGoogleLogin = useGoogleLogin({
     onSuccess: (tokenResponse) => setToken(tokenResponse.access_token),
   });
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (token) {
@@ -25,8 +28,24 @@ function Login() {
             },
           }
         )
-        .then((res) => {
-          setProfile(res.data);
+        .then(async (res) => {
+          const { email, name } = res.data;
+          const response = await Axios.post("/auth/googleLoginWithExpiry", {
+            username: name,
+            email: email,
+          });
+
+          const {
+            token,
+            user: { username, id },
+          } = response.data.data;
+
+          localStorage.clear();
+          localStorage.setItem("token", token);
+          localStorage.setItem("username", username);
+          localStorage.setItem("id", id);
+          navigate("/");
+          // window.location.reload();
         })
         .catch((err) => console.log(err));
     }
@@ -46,7 +65,7 @@ function Login() {
         <br />
         Create a free account now.
       </h1>
-      <div className="w-full flex justify-center items-center flex-col gap-5 mt-10 ">
+      <div className="w-full flex justify-center items-center flex-col gap-5 mt-10  ">
         {signinwith.map((item) => {
           return (
             <SiginWith

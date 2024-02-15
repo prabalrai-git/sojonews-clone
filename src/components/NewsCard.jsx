@@ -1,12 +1,64 @@
-import React from "react";
+import React, { useState } from "react";
 import { MdKeyboardArrowRight } from "react-icons/md";
 import { useSelector } from "react-redux";
+import { IoBookmarks } from "react-icons/io5";
+import { IoBookmarksOutline } from "react-icons/io5";
+import useLocalStorageGetItem from "../../hooks/useLocalStorageGetItem";
+import { BASE_URL } from "../api/server";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function NewsCard({ item }) {
+  const [clicked, setClicked] = useState(false);
   const darkMode = useSelector((state) => state.darkMode.value);
 
+  const user = useLocalStorageGetItem("username");
+
+  const token = useLocalStorageGetItem("token");
+
+  const navigate = useNavigate();
+
+  const toggleBookmarks = async (e) => {
+    e.stopPropagation();
+    try {
+      await axios.post(
+        `${BASE_URL}users/bookmarks/toggleOrAddBookmark`,
+        { newsId: item.id },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+          },
+        }
+      );
+      setClicked((prev) => !prev);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
-    <div className="w-full cursor-pointer">
+    <div
+      onClick={() => navigate(`/news/${item.id}`)}
+      className="w-full cursor-pointer relative"
+    >
+      {user ? (
+        clicked ? (
+          <IoBookmarks
+            onClick={(e) => toggleBookmarks(e)}
+            className="absolute z-50 top-[8px] left-[8px] hover:scale-125 transition delay-150 duration-100 ease-in-out"
+            color={"green"}
+            size={27}
+          />
+        ) : (
+          <IoBookmarksOutline
+            onClick={(e) => toggleBookmarks(e)}
+            className="absolute z-50 top-[8px] left-[8px] hover:scale-125 transition delay-150 duration-100 ease-in-out"
+            color={"green"}
+            size={27}
+          />
+        )
+      ) : null}
       <div className="w-full relative">
         <img
           src={item.image}
@@ -27,13 +79,13 @@ function NewsCard({ item }) {
         style={{ color: darkMode ? "lightgray" : "gray" }}
         className="mt-10 text-gray-700 text-sm"
       >
-        {item.previewText.length > 110
-          ? item.previewText.slice(0, 110) + "..."
-          : item.previewText.length}
+        {item.previewText?.length > 110
+          ? item.previewText?.slice(0, 110) + "..."
+          : item.previewText?.length}
       </p>
       <div className="w-full flex justify-between mt-5 items-end">
         <div className="bg-categorygreen text-appgreen rounded-xl px-5 py-1">
-          {item.topics[0].name}
+          {item?.topics[0].name}
         </div>
         <div className="text-appgreen flex gap-[5px] items-center">
           <p className="underline">Continue Reading</p>
